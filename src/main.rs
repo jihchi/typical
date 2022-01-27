@@ -44,6 +44,7 @@ const GENERATE_SUBCOMMAND: &str = "generate";
 const GENERATE_SUBCOMMAND_PATH_OPTION: &str = "generate-path";
 const GENERATE_SUBCOMMAND_RUST_OPTION: &str = "rust";
 const GENERATE_SUBCOMMAND_TYPESCRIPT_OPTION: &str = "typescript";
+const GENERATE_SUBCOMMAND_RESCRIPT_OPTION: &str = "rescript";
 const GENERATE_SUBCOMMAND_LIST_SCHEMAS_OPTION: &str = "list-schemas";
 const FORMAT_SUBCOMMAND: &str = "format";
 const FORMAT_SUBCOMMAND_PATH_OPTION: &str = "format-path";
@@ -91,6 +92,12 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
                         .value_name("PATH")
                         .long(GENERATE_SUBCOMMAND_TYPESCRIPT_OPTION)
                         .help("Sets the path of the TypeScript file to emit"),
+                )
+                .arg(
+                    Arg::with_name(GENERATE_SUBCOMMAND_RESCRIPT_OPTION)
+                        .value_name("PATH")
+                        .long(GENERATE_SUBCOMMAND_RESCRIPT_OPTION)
+                        .help("Sets the path of the ReScript file to emit"),
                 ),
         )
         .subcommand(
@@ -132,6 +139,7 @@ fn generate_code(
     list_schemas: bool,
     rust: Option<&Path>,
     typescript: Option<&Path>,
+    rescript: Option<&Path>,
 ) -> Result<(), Error> {
     // Load the schema and its transitive dependencies.
     eprintln!("Loading schemas\u{2026}");
@@ -209,6 +217,34 @@ fn generate_code(
                     "Unable to write {}.",
                     typescript.to_string_lossy().code_str(),
                 ),
+                None,
+                None,
+                Some(error),
+            )
+        })?;
+    }
+
+    // Generate ReScript code, if applicable.
+    if let Some(rescript) = rescript {
+        eprintln!("Generating ReScript\u{2026}");
+
+        // Create any missing intermediate directories as needed.
+        if let Some(parent) = rescript.parent() {
+            create_dir_all(parent).map_err(|error| {
+                throw(
+                    &format!("Unable to create {}.", parent.to_string_lossy().code_str()),
+                    None,
+                    None,
+                    Some(error),
+                )
+            })?;
+        }
+
+        // Generate the code and write it to the file.
+        eprintln!("Writing {}\u{2026}", rescript.to_string_lossy().code_str(),);
+        write(rescript, generate_typescript::generate(VERSION, &schemas)).map_err(|error| {
+            throw(
+                &format!("Unable to write {}.", rescript.to_string_lossy().code_str(),),
                 None,
                 None,
                 Some(error),
@@ -343,8 +379,13 @@ fn entry() -> Result<(), Error> {
                 .value_of(GENERATE_SUBCOMMAND_TYPESCRIPT_OPTION)
                 .map(Path::new);
 
+            // Determine the path to the ReScript output file, if provided.
+            let rescript = subcommand_matches
+                .value_of(GENERATE_SUBCOMMAND_RESCRIPT_OPTION)
+                .map(Path::new);
+
             // Generate code for the schema and its transitive dependencies.
-            generate_code(path, list_schemas, rust, typescript)?;
+            generate_code(path, list_schemas, rust, typescript, rescript)?;
         }
 
         // [tag:format_subcommand]
