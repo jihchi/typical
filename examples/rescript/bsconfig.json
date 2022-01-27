@@ -1,0 +1,16 @@
+{
+  "name": "example",
+  "sources": [
+    {
+      "dir": "src"
+    }
+  ],
+  "package-specs": [
+    {
+      "module": "es6",
+      "in-source": true
+    }
+  ],
+  "suffix": ".bs.js",
+  "bs-dependencies": []
+}

@@ -1,0 +1,10 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "scripts": {
+    "main": "typical generate types.t --rescript src/Types.res && rescript && node src/main.bs.js"
+  },
+  "devDependencies": {
+    "rescript": "^9.1.4"
+  }
+}

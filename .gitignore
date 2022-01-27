@@ -4,6 +4,8 @@
 /examples/typescript/dist/
 /examples/typescript/generated/
 /examples/typescript/node_modules/
+/examples/rescript/*.bs.js
+/examples/rescript/node_modules/
 /benchmarks/rust/target/
 /benchmarks/typescript/dist/
 /benchmarks/typescript/generated/
