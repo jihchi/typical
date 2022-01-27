@@ -5,6 +5,7 @@ mod count;
 mod error;
 mod error_merger;
 mod format;
+mod generate_rescript;
 mod generate_rust;
 mod generate_typescript;
 mod identifier;
@@ -242,7 +243,7 @@ fn generate_code(
 
         // Generate the code and write it to the file.
         eprintln!("Writing {}\u{2026}", rescript.to_string_lossy().code_str(),);
-        write(rescript, generate_typescript::generate(VERSION, &schemas)).map_err(|error| {
+        write(rescript, generate_rescript::generate(VERSION, &schemas)).map_err(|error| {
             throw(
                 &format!("Unable to write {}.", rescript.to_string_lossy().code_str(),),
                 None,

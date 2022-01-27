@@ -2,7 +2,12 @@
   "name": "example",
   "sources": [
     {
-      "dir": "src"
+      "dir": "src",
+      "subdirs": [
+        {
+          "dir": "generated"
+        }
+      ]
     }
   ],
   "package-specs": [
